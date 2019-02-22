@@ -20,38 +20,58 @@
 #' }
 #'
 
-river_model_prediction <- function(river){
-  stopifnot(length(river) ==1 & class(river) == "character")
+river_model_prediction <- function(river)
+{
+  stopifnot(length(river) == 1 && class(river) == "character")
+
   paths <- get_paths()
+
   is_valid_model <- FALSE
-  while (!is_valid_model){
+
+  while (! is_valid_model) {
+
     river_dir <- paths[[river]]
+
     rivermodels <- search_existing_models(river_dir)
 
     is_valid_user_input <- FALSE
-    while (!is_valid_user_input){
+
+    while (! is_valid_user_input) {
+
       user_selection <- choose_model(rivermodels)
 
-      if (user_selection == "exit")
+      if (user_selection == "exit") {
+
         return(print("Thank you for using this tool"))
+      }
 
-      if (user_selection == "new")
+      if (user_selection == "new") {
+
         build_new_model(river)
+      }
 
-      if (grepl("ERROR", user_selection))
+      if (grepl("ERROR", user_selection)) {
+
         cat(user_selection)
-      else
+
+      } else {
+
         is_valid_user_input <- TRUE
+      }
+
     }
+
     which_model <- as.numeric(user_selection)
+
     chosen_model <- rivermodels[[which_model]]
 
-    if (any(class(chosen_model) == "lm"))
-      is_valid_model <- TRUE
-  }
-  prediction <- predict_quality(chosen_model, river_dir)
+    if (any(class(chosen_model) == "lm")) {
 
-  invisible(prediction)
+      is_valid_model <- TRUE
+    }
+  }
+
+  invisible(predict_quality(chosen_model, river_dir))
 }
 
 # search_existing_models -------------------------------------------------------
@@ -72,22 +92,31 @@ river_model_prediction <- function(river){
 #' search_existing_models(river_dir = river_dir)}
 #'
 
-search_existing_models <- function(river_dir){
-  if(is.null(river_dir))
-    return(list())
+search_existing_models <- function(river_dir)
+{
+  if (is.null(river_dir)) {
 
-  if(!any(grepl("model", dir(river_dir))))
     return(list())
+  }
+
+  if (! any(grepl("model", dir(river_dir)))) {
+
+    return(list())
+  }
 
   model_dir <- paste0(river_dir, "/DATA_model_binary")
-  for (model in dir(model_dir, full.names = T)){
+
+  for (model in dir(model_dir, full.names = TRUE)) {
+
     load(model)
   }
+
   river <- tolower(utils::tail(unlist(strsplit(river_dir, "/")), n = 1))
-  rivermodels <- lapply(ls()[grepl(river, ls())], FUN = function(x){
-    model_list <- list(get(x))
-    names(model_list) <- x
-    model_list
+
+  rivermodels <- lapply(ls()[grepl(river, ls())], FUN = function(x) {
+
+    stats::setNames(list(get(x)), x)
   })
-  return(unlist(rivermodels, recursive = F))
+
+  unlist(rivermodels, recursive = FALSE)
 }

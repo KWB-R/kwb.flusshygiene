@@ -1,10 +1,15 @@
-read_dwd_stationsliste <- function (path) {
+read_dwd_stationsliste <- function (path)
+{
   con_dwd <- file(path)
+
   dwd_chr <- readLines(con = con_dwd)
+
   close(con_dwd)
 
   header <- unlist(strsplit(dwd_chr[1], " "))
-  dwd_chr <- dwd_chr[-c(1,2)]
+
+  dwd_chr <- dwd_chr[- c(1,2)]
+
   dwd <- data.frame(
     sub("(^.{5}).*", "\\1", dwd_chr), # id
     sub("^.{6}(.{8}).*", "\\1", dwd_chr), # von
@@ -14,7 +19,8 @@ read_dwd_stationsliste <- function (path) {
     sub("^.{53}(.{7}).*", "\\1", dwd_chr), # laenge
     sub("^.{61}(.{40}).*", "\\1", dwd_chr), # name
     sub("^.{102}(.{40}).*", "\\1", dwd_chr), # bundesland
-    stringsAsFactors = F)
+    stringsAsFactors = FALSE
+  )
 
   names(dwd) <- header
 
@@ -24,20 +30,23 @@ read_dwd_stationsliste <- function (path) {
   dwd$lat <- as.numeric(dwd$geoBreite)
   dwd$lon <- as.numeric(dwd$geoLaenge)
 
-  return(dwd)
+  dwd
 }
 
 # dwd_rr <- read_dwd_stationsliste("scrape_internet/DWD_RR_Tageswerte_Beschreibung_Stationen.txt")
 # dwd_kl <- read_dwd_stationsliste("scrape_internet/DWD_KL_Tageswerte_Beschreibung_Stationen.txt")
 # dwd_st <- read_dwd_stationsliste("scrape_internet/DWD_ST_Tageswerte_Beschreibung_Stationen.txt")
 
-find_neighbor <- function (lat, lon, dwd, n) {
-
-  dwd$r <- 1.852*60*sqrt(((lat - dwd$lat))^2 + ((lon - dwd$lon)*cos(pi*lat/180))^2)
+find_neighbor <- function (lat, lon, dwd, n)
+{
+  dwd$r <- 1.852 * 60 * sqrt(
+    (lat - dwd$lat)^2 +
+      ((lon - dwd$lon) * cos(pi * lat / 180))^2
+  )
 
   dwd <- dplyr::filter(dwd, dwd$bis >= as.Date("2017-11-30"))
 
-  dplyr::arrange(dwd, .data$r)[1:n, ]
+  dplyr::arrange(dwd, .data$r)[seq_len(n), ]
 }
 #
 # get_dwd_data_kl <- function (id, name, dir, per = "historical", from = "2004-01-01") {

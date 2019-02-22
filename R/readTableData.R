@@ -14,15 +14,11 @@ readTableData <- function
   sourcedir = system.file("extdata", "ODM", package = "kwb.flusshygiene")
 )
 {
-  filenames <- dir(sourcedir, "\\.csv$")
+  file_names <- dir(sourcedir, "\\.csv$")
 
-  tabledata <- lapply(
-    file.path(sourcedir, filenames),
-    FUN = utils::read.csv,
-    stringsAsFactors = FALSE
-  )
+  full_names <- file.path(sourcedir, file_names)
 
-  names(tabledata) <- gsub("\\.csv$", "", filenames)
+  table_data <- lapply(full_names, utils::read.csv, stringsAsFactors = FALSE)
 
-  tabledata
+  stats::setNames(table_data, gsub("\\.csv$", "", file_names))
 }
