@@ -13,6 +13,6 @@ import_riverdata(path)
 Returns a list of data.frames containing the river data
 }
 \description{
-Read existing, preprocessed csv files with first column datetime and other 
+Read existing, preprocessed csv files with first column datetime and other
 columns variable information.
 }

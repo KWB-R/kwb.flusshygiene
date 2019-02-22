@@ -13,9 +13,9 @@ choose_model(rivermodels)
 Returns the user input as character vector, or an ERROR message.
 }
 \description{
-Choose model asks the user inside the console for input. Options are Exit, 
-New Model, or one of a list of existing models. If no integer number was 
-presented by the user an ERROR message will be created but no ERROR will be 
+Choose model asks the user inside the console for input. Options are Exit,
+New Model, or one of a list of existing models. If no integer number was
+presented by the user an ERROR message will be created but no ERROR will be
 thrown. This way this can be inserted inside a loop.
 }
 \examples{

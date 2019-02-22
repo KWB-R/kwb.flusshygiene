@@ -30,7 +30,7 @@ plot_stan_model(timestamp, predict, linpred, log = FALSE, q90, q95,
 Plotting function. Returns a plot.
 }
 \description{
-Plots a sample of posterior predictions and means. Furthermore colours an 
+Plots a sample of posterior predictions and means. Furthermore colours an
 hygiene quality assessment as background (see EU Bathing Water Directive)
 Dark blue means excellent quality.
 Steelblue means good quality.
