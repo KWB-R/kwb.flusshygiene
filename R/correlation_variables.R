@@ -31,12 +31,17 @@ correlation_scatterplot<- function(df, ...){
                rad = "Globalstrahlung (W/m\u00b2)")[[variable]]
   if (grepl("^log", names(df)[2])) xlab <- paste(xlab, "- log10")
 
-  ggplot2::ggplot(data = df_history, ggplot2::aes(x = n, y = df_history[,1])) +
+  y <- df_history[,1]
+
+  x_max <- max(df_history$n, na.rm = TRUE) * 0.8
+  y_min <- min(df_history[,1], na.rm = TRUE) * 1.25
+
+  ggplot2::ggplot(data = df_history, ggplot2::aes_string(x = "n", y = "y")) +
     ggplot2::geom_point() +
     ggplot2::facet_wrap(~ lagday) +
-    ggplot2::geom_label(data = cor_values, ggplot2::aes(label = cor_values,
-                                      x = max(df_history$n, na.rm=T)*0.8,
-                                      y = min(df_history[,1], na.rm=T)*1.25)) +
+    ggplot2::geom_label(data = cor_values, ggplot2::aes_string(
+      label = "cor_values", x = "x_max", y = "y_min"
+    )) +
     ggplot2::theme_bw() + ggplot2::labs(x = xlab, y = ylab)
 }
 

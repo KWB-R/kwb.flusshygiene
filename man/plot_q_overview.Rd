@@ -13,6 +13,6 @@ plot_q_overview(q_df)
 Returns a plot
 }
 \description{
-Creates a plot with the standard flowing conditions over the year. The data 
+Creates a plot with the standard flowing conditions over the year. The data
 of all years will be taken into account.
 }

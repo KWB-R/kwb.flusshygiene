@@ -34,7 +34,7 @@ unroll_physical_data <- function(physical_data){
 
 unroll_lagdays <- function(df, n = 5){
   stopifnot(n > 0)
-  df2 <- subset(df, select = -datum)
+  df2 <- subset(df, select = -df$datum)
 
   selectvector <- c(rep(1, n), rep(NA, n-1))
   selectmatrix <- !is.na(unroll_vector2lagmatrix(selectvector, n)[-(1:2),])

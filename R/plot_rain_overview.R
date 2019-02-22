@@ -19,13 +19,13 @@ plot_rain_overview <- function(df){
   site_names <- gsub("_day", "", (gsub("r_", "", names(df)[-1])))
   names(df)[-1] <- site_names
   df <- dplyr::mutate(df , mean = rowMeans(df[, -1], na.rm = T))
-  df <- dplyr::group_by(df, month = lubridate::month(datum, T))
+  df <- dplyr::group_by(df, month = lubridate::month(.data$datum, T))
   n_years <- length(unique(format(df$datum, "%Y")))
 
   df2 <- dplyr::summarise_(df, .dots = stats::setNames(paste0(
     "sum(",c(site_names, "mean"),", na.rm = T)/", n_years), c(site_names,"mean")))
   df2 <- tidyr::gather(df2, "site", "Niederschlag", -1)
-  df2 <- dplyr::mutate(df2, site = factor(site, levels = c(site_names,"mean")))
+  df2 <- dplyr::mutate(df2, site = factor(.data$site, levels = c(site_names,"mean")))
 
   ggplot2::ggplot(data = df2, ggplot2::aes_string(x = "month", y = "Niederschlag")) +
     ggplot2::geom_bar(stat = "identity", fill = "steelblue") +
