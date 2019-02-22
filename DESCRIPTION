@@ -4,14 +4,14 @@ Version: 0.2.1.9000
 Authors@R: c(
     person("Carsten", "Vick", email = "carsten.toad@gmail.com", role = "aut"), 
     person("Hauke", "Sonnenberg", email = "hauke.sonnenberg@kompetenz-wasser.de", role = "cre"), 
-    person("Wolfgang", "Seis", email = "wolfgang.seis@posteo.de", role = c("aut", "ths")))
+    person("Wolfgang", "Seis", email = "wolfgang.seis@kompetenz-wasser.de", role = c("aut", "ths")))
 Description: Easy and transferable functions for creating and managing 
     models for hygiene data in rivers. This package is developed within the 
     FLUSSHYGIENE project. 
     See https://bmbf.nawam-rewam.de/en/projekt/flusshygiene/ for details.
 License: GPL-3
-RoxygenNote: 6.0.1
-Depends: R (>= 3.4.1), stats, utils, graphics, grDevices
+RoxygenNote: 6.1.1
+Depends: R (>= 3.4), stats, utils, graphics, grDevices
 Imports:
     MASS (>= 7.3-47), 
     dplyr (>= 0.7.4), 
@@ -24,8 +24,11 @@ Imports:
     kwb.utils (>= 0.3.99)
 Suggests:
     knitr,
+    readxl,
     rmarkdown,
     testthat
+Remotes: 
+    github::kwb-r/kwb.utils
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
