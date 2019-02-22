@@ -221,11 +221,11 @@ create_formula <- function(variables){
   rest_vars <- setdiff(rest, q_vars)
 
   if (length(q_vars)>0 && (yn <- readline(prompt="With interactions? (y/n): "))=="y") {
-    ff <- as.formula(paste0(c(ziel, "~", paste0(q_vars,collapse="*"),
+    ff <- stats::as.formula(paste0(c(ziel, "~", paste0(q_vars,collapse="*"),
                                 "*(", paste0(rest_vars,collapse="+"), ")"),
                               collapse = ""))
   } else {
-    ff <- as.formula(paste0(ziel, "~", paste0(rest,collapse="+"), collapse=""))
+    ff <- stats::as.formula(paste0(ziel, "~", paste0(rest,collapse="+"), collapse=""))
   }
   return(ff)
 }

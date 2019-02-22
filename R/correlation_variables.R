@@ -55,7 +55,7 @@ correlation_scatterplot<- function(df, ...){
 
 correlation_values <- function(df, ...){
   cor_values <- unlist(lapply(df[,-1], function(y){
-    cor(x = df[,1], y = y, use = "pairwise.complete.obs", ...)
+    stats::cor(x = df[,1], y = y, use = "pairwise.complete.obs", ...)
     }))
   cor_values <- data.frame(cor_values = round(cor_values, 4),
                            lagday = names(cor_values))

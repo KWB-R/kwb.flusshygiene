@@ -136,8 +136,8 @@ plot_predicted_quality <- function(model, prediction, ...){
   predictyear <- prediction$predict
   linpredyear <- prediction$linpred
 
-  q95 <- apply(predictyear, 2, quantile, probs = 0.95)
-  q90 <- apply(predictyear, 2, quantile, probs = 0.90)
+  q95 <- apply(predictyear, 2, stats::quantile, probs = 0.95)
+  q90 <- apply(predictyear, 2, stats::quantile, probs = 0.90)
 
   log <- any(grepl("log", deparse(model$formula)))
   if(log)

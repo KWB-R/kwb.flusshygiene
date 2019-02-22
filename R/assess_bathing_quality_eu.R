@@ -17,7 +17,7 @@ assess_bathing_quality_eu <- function
   log = TRUE
 )
 {
-  e.coli <- na.omit(e.coli)
+  e.coli <- stats::na.omit(e.coli)
   if (length(e.coli) < 16)
     warning("Less than 16 e.coli elements. EU directive does need 16 at least.")
   if (15 < mean(e.coli))
@@ -25,7 +25,7 @@ assess_bathing_quality_eu <- function
   if (!log)
     e.coli <- log10(e.coli)
   mu <- mean(e.coli)
-  sigma <- sd(e.coli) # sd uses nominator n-1 which leads to higher sigmas
+  sigma <- stats::sd(e.coli) # sd uses nominator n-1 which leads to higher sigmas
   q90 <- 1.282 * sigma + mu
   q95 <- 1.65  * sigma + mu
 
