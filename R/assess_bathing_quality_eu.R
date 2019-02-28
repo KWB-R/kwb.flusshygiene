@@ -27,7 +27,7 @@ assess_bathing_quality_eu <- function(e.coli, log = TRUE)
     e.coli <- log10(e.coli)
   }
 
-  # sd uses nominator n - 1 which leads to higher sigmas
+  # sd uses nominator n - 1 which leads an unbiased estimate of the population distribution
   sigma <- stats::sd(e.coli)
   mu <- mean(e.coli)
 
@@ -40,7 +40,7 @@ assess_bathing_quality_eu <- function(e.coli, log = TRUE)
     1
   } else if (q95 < log10(1000)) {
     2
-  } else if (q90 < log10(900)) {
+  } else if (q90 < log10(900) & q95 < log10(1000)) {
     3
   } else {
     4
