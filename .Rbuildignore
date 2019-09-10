@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 R/exampleMain.R
 ^LICENSE\.md$
+^README\.md$
+^index\.md$
