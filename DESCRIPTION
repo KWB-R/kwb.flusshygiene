@@ -9,7 +9,7 @@ Description: Easy and transferable functions for creating and managing
     models for hygiene data in rivers. This package is developed within the 
     FLUSSHYGIENE project. 
     See https://bmbf.nawam-rewam.de/en/projekt/flusshygiene/ for details.
-License: GPL-3
+License: MIT + file LICENSE
 RoxygenNote: 6.1.1
 Depends: R (>= 3.4), stats, utils, graphics, grDevices
 Imports:
