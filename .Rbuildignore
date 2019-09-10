@@ -5,3 +5,4 @@ R/exampleMain.R
 ^README\.md$
 ^index\.md$
 ^\.travis\.yml$
+^appveyor\.yml$
