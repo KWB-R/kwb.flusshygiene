@@ -11,7 +11,6 @@
 #' @return Returns a list of data.frames for each variable. The data.frames
 #' contain the unrolled lagdays (with maxday = 5, length(df) == 17)
 #' @export
-#'
 #' @examples
 #' df1 <- data.frame(datum = rep("egal", 25), var = 1:25)
 #' df2 <- data.frame(datum = rep("egal", 25), var2 = 51:75, var3 = 101:125)
@@ -29,15 +28,15 @@ unroll_physical_data <- function(physical_data)
 #' \code{unroll_lagdays} is the mere unroll of a data.frame. See examples
 #'
 #' @describeIn unroll_physical_data Internal usage mostly
-#' @export
 #' @importFrom dplyr lag
 #' @importFrom tibble tibble
-
+#' @importFrom kwb.utils removeColumns
+#' @export
 unroll_lagdays <- function(df, n = 5)
 {
   stopifnot(n > 0)
 
-  df2 <- subset(df, select = - df$datum)
+  df2 <- kwb.utils::removeColumns(df, "datum")
 
   selectvector <- c(rep(1, n), rep(NA, n - 1))
 
