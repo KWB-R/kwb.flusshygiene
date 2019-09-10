@@ -1,6 +1,6 @@
 Package: kwb.flusshygiene
 Title: Functions used within FLUSSHYGIENE project (BMBF)
-Version: 0.2.1.9000
+Version: 0.2.2
 Authors@R: c(
     person("Carsten", "Vick", email = "carsten.toad@gmail.com", role = "aut"), 
     person("Hauke", "Sonnenberg", email = "hauke.sonnenberg@kompetenz-wasser.de", role = "cre"), 
