@@ -9,11 +9,13 @@ Authors@R:
       person(given = "Hauke",
              family = "Sonnenberg",
              role = "cre",
-             email = "hauke.sonnenberg@kompetenz-wasser.de"),
+             email = "hauke.sonnenberg@kompetenz-wasser.de",
+             comment = c(ORCID = "0000-0001-9134-2871")),
       person(given = "Wolfgang",
              family = "Seis",
              role = c("aut", "ths"),
-             email = "wolfgang.seis@kompetenz-wasser.de"))
+             email = "wolfgang.seis@kompetenz-wasser.de",
+             comment = c(ORCID = "0000-0002-7436-8575")))
 Description: Easy and transferable functions for creating and
     managing models for hygiene data in rivers. This package is developed
     within the FLUSSHYGIENE project.  See
