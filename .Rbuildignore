@@ -6,3 +6,6 @@ R/exampleMain.R
 ^index\.md$
 ^\.travis\.yml$
 ^appveyor\.yml$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
