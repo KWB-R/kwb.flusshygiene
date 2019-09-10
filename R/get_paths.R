@@ -26,9 +26,14 @@
 #'
 get_paths <- function(resolve = TRUE, ...)
 {
-  file <- "R_Development/RScripts/Flusshygiene/config/pathDictionary.txt"
+  dev_dir_1 <- file.path(kwb.utils::desktop(), "R_Development")
+  dev_dir_2 <- file.path("~/R-Development")
 
-  file <- kwb.utils::safePath(kwb.utils::desktop(), file)
+  dev_dir <- ifelse(file.exists(dev_dir_1), dev_dir_1, dev_dir_2)
+
+  path <- "RScripts/Flusshygiene/config/pathDictionary.txt"
+
+  file <- kwb.utils::safePath(dev_dir, path)
 
   paths <- kwb.utils::readDictionary(file)
 
