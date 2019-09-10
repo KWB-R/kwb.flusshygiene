@@ -4,3 +4,4 @@ R/exampleMain.R
 ^LICENSE\.md$
 ^README\.md$
 ^index\.md$
+^\.travis\.yml$
