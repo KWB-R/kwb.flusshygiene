@@ -21,6 +21,8 @@ Description: Easy and transferable functions for creating and
     within the FLUSSHYGIENE project.  See
     https://bmbf.nawam-rewam.de/en/projekt/flusshygiene/ for details.
 License: MIT + file LICENSE
+URL: https://github.com/KWB-R/kwb.flusshygiene
+BugReports: https://github.com/KWB-R/kwb.flusshygiene/issues
 Depends: 
     R (>= 3.4),
     stats,
