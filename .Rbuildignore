@@ -9,3 +9,4 @@ R/exampleMain.R
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.gitlab-ci\.yml$
