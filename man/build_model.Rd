@@ -7,18 +7,22 @@
 \alias{create_formula}
 \title{Build a Model for E.Coli}
 \usage{
-build_model(riverdata, variables = ask_for_variables(riverdata))
+build_model(riverdata, variables = ask_for_variables(riverdata),
+  with_interaction = TRUE)
 
 ask_for_variables(riverdata)
 
 process_model_riverdata(riverdata, variables)
 
-create_formula(variables)
+create_formula(variables, with_interaction = FALSE)
 }
 \arguments{
 \item{riverdata}{a list with riverdata (hygiene + physical data)}
 
 \item{variables}{character. Selected variables for the model}
+
+\item{with_interaction}{logical. Formula with interactions? Default set to
+TRUE}
 }
 \value{
 Returns a model of the riverdata.

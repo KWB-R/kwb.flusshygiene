@@ -12,38 +12,53 @@
 #' @export
 #'
 #' @importFrom dplyr bind_rows arrange
-#'
+#' @importFrom rlang .data
 #' @examples
 #' print(get_mpn_ci(c(15,30,35,60,61,71,120,1959,25000,369990)))
 #'
 
-get_mpn_ci <- function(e.coli){
+get_mpn_ci <- function(e.coli)
+{
   path <- paste0(get_paths()$dir.riverdata, "/MPN_tables")
-  mpn_2 <- read.table(file = paste0(path,"/MPN_2dilutions_delim.txt"),
-                              header = T, sep = " ")
-  mpn_4 <- read.table(file = paste0(path,"/MPN_4dilutions_delim.txt"),
-                              header = T, sep = " ")
+
+  # Helper function to read text file
+  read <- function(file) utils::read.table(file, header = TRUE, sep = " ")
+
+  mpn_2 <- read(file = paste0(path,"/MPN_2dilutions_delim.txt"))
+  mpn_4 <- read(file = paste0(path,"/MPN_4dilutions_delim.txt"))
+
   # mpn_2: mpn = bacteria/100ml
   # mpn_4: mpn*d*100 = bacteria/100ml , with d = 10
-  mpn_4[,4:6] <- mpn_4[,4:6]*1000
+  mpn_4[, 4:6] <- mpn_4[, 4:6] * 1000
 
-  mpn <- dplyr::bind_rows(mpn_2[,3:5], mpn_4[,4:6])
+  mpn <- dplyr::bind_rows(mpn_2[, 3:5], mpn_4[, 4:6])
 
   lookup_mpn <- function (x) {
+
     is_in <- mpn$MPN == x
+
     if (any(is_in)) {
+
       ind <- which(is_in)
       res <- as.numeric(mpn[ind[1],])
+
     } else {
-      mpn_sorted <- dplyr::arrange(mpn, MPN)
+
+      mpn_sorted <- dplyr::arrange(mpn, .data$MPN)
       ind <- findInterval(x, mpn_sorted$MPN)
-      df <- mpn_sorted[c(ind, ind+1),]
-      res <- c(x,
-               round(predict(lm(LO ~ MPN, data = df), newdata = data.frame(MPN = x))),
-               round(predict(lm(UP ~ MPN, data = df), newdata = data.frame(MPN = x))))
+      df <- mpn_sorted[c(ind, ind + 1), ]
+
+      # Helper function to predict
+      rounded_prediction <- function(formula) {
+        round(stats::predict(
+          stats::lm(formula, data = df), newdata = data.frame(MPN = x)
+        ))
+      }
+
+      res <- c(x, rounded_prediction(LO ~ MPN), rounded_prediction(UP ~ MPN))
     }
-    names(res) <- c("e.coli","lo","up")
-    return(res)
+
+    stats::setNames(res, c("e.coli", "lo", "up"))
   }
 
   as.data.frame(t(vapply(e.coli, lookup_mpn, numeric(3))))

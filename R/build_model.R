@@ -254,7 +254,7 @@ process_model_riverdata <- function(riverdata, variables)
     model_list <- list(hygiene = subset(hygiene_df, select = c("datum","e.coli")))
   }
 
-  typedata2 <- purrr:map2(.f = function (df, y) {
+  typedata2 <- purrr::map2(.f = function (df, y) {
     if(!y) return(df)
     df[,-1] <- lapply(df[,-1], function(x) {log10(x + 1)})
     names(df)[-1] <- paste0("log_", names(df)[-1])
@@ -282,9 +282,6 @@ process_model_riverdata <- function(riverdata, variables)
 #' Builds a formula out of the given variables with the form
 #' \code{e.coli ~ q * (ka + r)}
 #'
-#' @param variables names of variables
-#' @param with_interaction logical. Formula with interactions? Default set to
-#'   TRUE
 #' @describeIn build_model Internal usage
 #' @return Returns parsed model-formula. (Like model$formula)
 #' @export
