@@ -26,6 +26,7 @@ assess_bathing_quality_eu <- function
     e.coli <- log10(e.coli)
   mu <- mean(e.coli)
   sigma <- sd(e.coli) # sd uses nominator n-1 which leads to higher sigmas
+  if (is.na(sigma)) sigma <- 0.5 # happens when only one e.coli value
   q90 <- 1.282 * sigma + mu
   q95 <- 1.65  * sigma + mu
 
