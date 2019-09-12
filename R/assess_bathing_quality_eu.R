@@ -32,7 +32,9 @@ assess_bathing_quality_eu <- function(e.coli, log = TRUE)
 
   mu <- mean(e.coli)
 
-  sigma <- stats::sd(e.coli) # sd uses nominator n-1 which leads to higher sigmas
+  # sd uses nominator n-1 which leads to higher sigmas
+  # sigma = NA (happens if there is only one e.coli value) -> use default of 0.5
+  sigma <- kwb.utils::defaultIfNA(stats::sd(e.coli), 0.5)
 
   q90 <- 1.282 * sigma + mu
   q95 <- 1.65  * sigma + mu
