@@ -14,6 +14,7 @@
 #'
 #' @param riverdata a list with riverdata (hygiene + physical data)
 #' @param variables character. Selected variables for the model
+#' @param with_interaction logical. Formula with interactions? Default set to TRUE
 #'
 #' @return Returns a model of the riverdata.
 #' @export
@@ -21,10 +22,15 @@
 #' @importFrom rstanarm stan_lm R2
 #'
 
-build_model <- function(riverdata, variables = ask_for_variables(riverdata)){
+build_model <- function(
+  riverdata,
+  variables = ask_for_variables(riverdata),
+  with_interaction = TRUE
+)
+{
   model_riverdata <- process_model_riverdata(riverdata, variables)
 
-  model_formula <- create_formula(variables)
+  model_formula <- create_formula(variables, with_interaction)
 
   model <- do.call(rstanarm::stan_lm, list(model_formula, data = model_riverdata,
                                            prior = rstanarm::R2(location = 0.8),
@@ -72,12 +78,18 @@ ask_for_variables <- function(riverdata){
     hygiene_df <- subset(hygiene_df, select = c("datum","e.coli"))
   }
 
-  typedata2 <- mapply(function (df, y) {
+  log_transform <- function (df, y) {
     if(!y) return(df)
     df[,-1] <- lapply(df[,-1], function(x) {log10(x + 1)})
     names(df)[-1] <- paste0("log_", names(df)[-1])
     return(df)
-  }, typedata, log[-1])
+  }
+
+  if (length(typedata) > 1) {
+    typedata2 <- mapply(FUN = log_transform, typedata, log[-1])
+  } else {
+    typedata2 <- lapply(typedata, log_transform, y = log[-1])
+  }
 
   time_x <- hygiene_df$datum
 
@@ -142,9 +154,9 @@ ask_for_variables <- function(riverdata){
 # process_model_riverdata ------------------------------------------------------
 #'
 #' \code{process_model_riverdata}: builds a data.frame out of the given
-#' variables. This data.frame can be passed to the data argument of a
-#' modelfunction alongside with \code{eval(create_formula(variables))} to
-#' the formula argument
+#' variables as char-string. This data.frame can be passed to the data argument
+#' of a modelfunction alongside with \code{eval(create_formula(variables))} to
+#' the formula argument. Interaction char-strings get omitted automatically.
 #'
 #' @describeIn build_model Internal usage
 #' @return Returns a data.frame with data for hygiene and chosen variables
@@ -159,6 +171,8 @@ ask_for_variables <- function(riverdata){
 process_model_riverdata <- function(riverdata, variables){
   hygiene_df <- riverdata[[grep("hygiene", names(riverdata))]]
   typedata <- riverdata[!grepl("hygiene", names(riverdata))]
+
+  variables <- variables[!grepl(":",variables)]
 
   # e.coli log-transformed?
   log <- grepl("^log", variables[1])
@@ -177,12 +191,12 @@ process_model_riverdata <- function(riverdata, variables){
     model_list <- list(hygiene = subset(hygiene_df, select = c("datum","e.coli")))
   }
 
-  typedata2 <- mapply(function (df, y) {
+  typedata2 <- purrr::map2(.f = function (df, y) {
     if(!y) return(df)
     df[,-1] <- lapply(df[,-1], function(x) {log10(x + 1)})
     names(df)[-1] <- paste0("log_", names(df)[-1])
     return(df)
-  }, typedata, log[-1])
+  }, .x = typedata, .y = log[-1])
 
   unrolled_typedata <- unroll_physical_data(typedata2)
 
@@ -214,20 +228,24 @@ process_model_riverdata <- function(riverdata, variables){
 #' create_formula(c("e.coli","r_mitte","r_charlottenburg","r_spandau"))
 #'
 
-create_formula <- function(variables){
+create_formula <- function(variables, with_interaction = FALSE){
   ziel <- variables[grep("e.coli", variables)]
   rest <- setdiff(variables, ziel)
   q_vars <- rest[grep("^(log_)?q_", rest)]
-  rest_vars <- setdiff(rest, q_vars)
+  i_vars <- rest[grep("^i_", rest)]
+  sd_vars <- rest[grep("^sd_", rest)]
+  rest_vars <- setdiff(rest, c(q_vars,i_vars,sd_vars))
 
-  if (length(q_vars)>0 && (yn <- readline(prompt="With interactions? (y/n): "))=="y") {
-    ff <- as.formula(paste0(c(ziel, "~", paste0(q_vars,collapse="*"),
-                                "*(", paste0(rest_vars,collapse="+"), ")"),
-                              collapse = ""))
+  if (length(q_vars)>0 && with_interaction) {
+    ff <- paste0(c(ziel, "~", paste0(q_vars,collapse="*"), "*(",
+                   paste0(rest_vars, collapse="+"), ")"), collapse="")
+    if (length(i_vars) + length(sd_vars) > 0)
+      to_add <- paste0(i_vars, sd_vars, collapse="+")
+      ff <- paste(ff, to_add, sep="+")
   } else {
-    ff <- as.formula(paste0(ziel, "~", paste0(rest,collapse="+"), collapse=""))
+    ff <- paste0(ziel, "~", paste0(rest,collapse="+"), collapse="")
   }
-  return(ff)
+  return(as.formula(ff))
 }
 
 # present_model ---------------------------------------------------------------
