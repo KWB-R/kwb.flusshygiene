@@ -14,7 +14,8 @@
 #'
 #' @param riverdata a list with riverdata (hygiene + physical data)
 #' @param variables character. Selected variables for the model
-#' @param with_interaction logical. Formula with interactions? Default set to TRUE
+#' @param with_interaction logical. Formula with interactions? Default set to
+#'   TRUE
 #'
 #' @return Returns a model of the riverdata.
 #' @export
@@ -32,10 +33,11 @@ build_model <- function(
 
   model_formula <- create_formula(variables, with_interaction)
 
-  model <- do.call(rstanarm::stan_lm, list(model_formula, data = model_riverdata,
-                                           prior = rstanarm::R2(location = 0.8),
-                                           adapt_delta = 0.99999))
-  return(model)
+  do.call(rstanarm::stan_lm, list(
+    model_formula, data = model_riverdata,
+    prior = rstanarm::R2(location = 0.8),
+    adapt_delta = 0.99999
+  ))
 }
 
 # ask_for_variables ------------------------------------------------------------
@@ -47,115 +49,174 @@ build_model <- function(
 #' @return Returns a character-vector with the chosen model variables
 #'
 
-ask_for_variables <- function(riverdata){
+ask_for_variables <- function(riverdata)
+{
   # prepare data
   hygiene_df <- riverdata[[grep("hygiene", names(riverdata))]]
-  typedata <- riverdata[!grepl("hygiene", names(riverdata))]
+  typedata <- riverdata[! grepl("hygiene", names(riverdata))]
 
   # e.coli log-transformed?
-  message("You now have to choose the variables for your model E.Coli ~ predictors")
+  message(
+    "You now have to choose the variables for your model E.Coli ~ predictors"
+  )
+
   yn <- readline(prompt = "E.Coli as log10? (y/n): ")
-  if (yn == "y") {log <- T} else {log <- F}
+
+  log <- (yn == "y")
 
   # general selection and log-transformation
-  for (type in names(typedata)){
+  for (type in names(typedata)) {
+
     yn <- readline(prompt = paste0("Include ", type, "? (y/n): "))
+
     if (yn != "y") {
+
       typedata <- subset(typedata, subset = names(typedata) != type)
+
     } else {
+
       # variable log-transformed?
       yn <- readline(prompt =  paste(type,"as log10? (y/n): "))
-      if (yn == "y") {log <- c(log,T)} else {log <- c(log,F)}
+
+      log <- c(log, (yn == "y"))
     }
   }
 
   # change log-transformations in data
   names(log) <- c("e.coli", names(typedata))
+
   if (log[["e.coli"]]) {
+
     hygiene_df$log_e.coli <- log10(hygiene_df$e.coli)
-    hygiene_df <- subset(hygiene_df, select = c("datum","log_e.coli"))
+
+    hygiene_df <- subset(hygiene_df, select = c("datum", "log_e.coli"))
+
   } else {
+
     hygiene_df <- subset(hygiene_df, select = c("datum","e.coli"))
   }
 
   log_transform <- function (df, y) {
-    if(!y) return(df)
-    df[,-1] <- lapply(df[,-1], function(x) {log10(x + 1)})
+
+    if (! y) {
+
+      return(df)
+    }
+
+    df[,-1] <- lapply(df[, -1], function(x) log10(x + 1))
+
     names(df)[-1] <- paste0("log_", names(df)[-1])
-    return(df)
+
+    df
   }
 
-  if (length(typedata) > 1) {
-    typedata2 <- mapply(FUN = log_transform, typedata, log[-1])
+  typedata2 <- if (length(typedata) > 1) {
+
+    mapply(FUN = log_transform, typedata, log[-1])
+
   } else {
-    typedata2 <- lapply(typedata, log_transform, y = log[-1])
+
+    lapply(typedata, log_transform, y = log[-1])
   }
 
   time_x <- hygiene_df$datum
 
   # basic choosing (with number of complete observations)
   basic <- character(0)
-  for (df in typedata2){
-      # possible predictors
-      variables <- names(df)[-1]
 
-      for (colname in variables){
-        n_obs <- sum(!is.na(subset(df, subset = df$datum %in% time_x)[[colname]]))
+  for (df in typedata2) {
 
-        message <- paste0(colname, ": ", n_obs, "/", length(time_x), "? (y/n): ")
-        yn <- readline(prompt = message)
-        if(yn != "y")
-          variables[variables == colname] <- NA
+    # possible predictors
+    variables <- names(df)[-1]
+
+    for (colname in variables) {
+
+      n_obs <- sum(! is.na(subset(df, subset = df$datum %in% time_x)[[colname]]))
+
+      message <- paste0(colname, ": ", n_obs, "/", length(time_x), "? (y/n): ")
+
+      yn <- readline(prompt = message)
+
+      if (yn != "y") {
+
+        variables[variables == colname] <- NA
       }
-      basic <- c(basic, variables[!is.na(variables)])
+    }
+
+    basic <- c(basic, variables[! is.na(variables)])
   }
 
   if (length(basic) == 0) {
-    stop("Need more parameters for modelling.", call. = F)
+
+    stop("Need more parameters for modelling.", call. = FALSE)
   }
 
   # choose distance of temporal lag
-  days <- as.numeric(readline(prompt = "Calculate lagdays up to how many days?: "))
+  days <- as.numeric(readline(
+    prompt = "Calculate lagdays up to how many days?: "
+  ))
+
   stopifnot(any(days == 1:10))
 
-  method <- readline(prompt = "Which correlation method? (pearson, kendall, spearman): ")
+  method <- readline(
+    prompt = "Which correlation method? (pearson, kendall, spearman): "
+  )
+
   stopifnot(method %in% c("pearson", "kendall", "spearman"))
 
   # choose lagdays
   expand <- character(0)
-  for (df in typedata2){
-    for (colname in names(df)[-1]){
+
+  for (df in typedata2) {
+
+    for (colname in names(df)[-1]) {
+
       if (colname %in% basic) {
+
         # unroll lagdays of chosen variables
-        unrolled_df <- unroll_lagdays(subset(df, select = c("datum", colname)), n = days)
-        df2 <- merge(hygiene_df, unrolled_df, by = "datum")[,-1]
+        unrolled_df <- unroll_lagdays(
+          subset(df, select = c("datum", colname)), n = days
+        )
+
+        df2 <- merge(hygiene_df, unrolled_df, by = "datum")[, -1]
+
         # print scatterplots
         print(correlation_scatterplot(df2, method))
+
         # possible lagdays
         lagdays <- names(df2)[-1]
-        for (var in lagdays){
+
+        for (var in lagdays) {
+
           yn <- readline(prompt = paste0(var, "?: (y/n)"))
-          if (yn != "y")
+
+          if (yn != "y") {
+
             lagdays[lagdays == var] <- NA
+          }
         }
-        expand <- c(expand, lagdays[!is.na(lagdays)])
+
+        expand <- c(expand, lagdays[! is.na(lagdays)])
       }
     }
   }
+
   message("The final model predictors are:")
   cat(paste0(expand, collapse = " \n"))
 
-  if (length(expand) < 3)
-    warning("Less than 3 predictors chosen, stan_lm needs 3 at least", call. = F)
+  if (length(expand) < 3) {
 
-  return(c(names(hygiene_df)[2],expand))
+    warning("Less than 3 predictors chosen, stan_lm needs 3 at least", call. = F)
+  }
+
+  c(names(hygiene_df)[2], expand)
 }
 
 # process_model_riverdata ------------------------------------------------------
 #'
 #' \code{process_model_riverdata}: builds a data.frame out of the given
 #' variables as char-string. This data.frame can be passed to the data argument
-#' of a modelfunction alongside with \code{eval(create_formula(variables))} to
+#' of a model function alongside with \code{eval(create_formula(variables))} to
 #' the formula argument. Interaction char-strings get omitted automatically.
 #'
 #' @describeIn build_model Internal usage
@@ -168,14 +229,18 @@ ask_for_variables <- function(riverdata){
 #' data = process_model_riverdata(riverdata, variables))}
 #'
 
-process_model_riverdata <- function(riverdata, variables){
+process_model_riverdata <- function(riverdata, variables)
+{
   hygiene_df <- riverdata[[grep("hygiene", names(riverdata))]]
-  typedata <- riverdata[!grepl("hygiene", names(riverdata))]
+  typedata <- riverdata[! grepl("hygiene", names(riverdata))]
+
+  variables <- variables[! grepl(":", variables)]
 
   variables <- variables[!grepl(":",variables)]
 
   # e.coli log-transformed?
   log <- grepl("^log", variables[1])
+
   # any data log-transformed?
   prefix <- sub("^(log_)?([a-z]{1,3})_.*", "\\2", variables[-1])
   log_prefix <- unique(prefix[grepl("^log", variables[-1])])
@@ -227,25 +292,39 @@ process_model_riverdata <- function(riverdata, variables){
 #' create_formula(c("log_e.coli","q_havel","ka_ruhleben","r_berlin"))
 #' create_formula(c("e.coli","r_mitte","r_charlottenburg","r_spandau"))
 #'
-
-create_formula <- function(variables, with_interaction = FALSE){
+create_formula <- function(variables, with_interaction = FALSE)
+{
   ziel <- variables[grep("e.coli", variables)]
+
   rest <- setdiff(variables, ziel)
+
   q_vars <- rest[grep("^(log_)?q_", rest)]
   i_vars <- rest[grep("^i_", rest)]
   sd_vars <- rest[grep("^sd_", rest)]
-  rest_vars <- setdiff(rest, c(q_vars,i_vars,sd_vars))
+  rest_vars <- setdiff(rest, c(q_vars, i_vars, sd_vars))
 
-  if (length(q_vars)>0 && with_interaction) {
-    ff <- paste0(c(ziel, "~", paste0(q_vars,collapse="*"), "*(",
-                   paste0(rest_vars, collapse="+"), ")"), collapse="")
-    if (length(i_vars) + length(sd_vars) > 0)
-      to_add <- paste0(i_vars, sd_vars, collapse="+")
-      ff <- paste(ff, to_add, sep="+")
+  if (length(q_vars) > 0 && with_interaction) {
+
+    formula_string <- paste0(collapse = "", c(
+      ziel, "~",
+      paste0(q_vars, collapse = "*"),
+      "*(", paste0(rest_vars, collapse = "+"), ")"
+    ))
+
+    if (length(i_vars) + length(sd_vars) > 0) {
+
+      to_add <- paste0(i_vars, sd_vars, collapse = "+")
+      formula_string <- paste(formula_string, to_add, sep = "+")
+    }
+
   } else {
-    ff <- paste0(ziel, "~", paste0(rest,collapse="+"), collapse="")
+
+    formula_string <- paste0(
+      collapse = "", ziel, "~", paste0(rest, collapse = "+")
+    )
   }
-  return(as.formula(ff))
+
+  stats::as.formula(formula_string)
 }
 
 # present_model ---------------------------------------------------------------
