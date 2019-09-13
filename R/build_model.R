@@ -236,6 +236,8 @@ process_model_riverdata <- function(riverdata, variables)
 
   variables <- variables[! grepl(":", variables)]
 
+  variables <- variables[!grepl(":",variables)]
+
   # e.coli log-transformed?
   log <- grepl("^log", variables[1])
 
@@ -297,22 +299,16 @@ create_formula <- function(variables, with_interaction = FALSE)
   rest <- setdiff(variables, ziel)
 
   q_vars <- rest[grep("^(log_)?q_", rest)]
-
   i_vars <- rest[grep("^i_", rest)]
-
   sd_vars <- rest[grep("^sd_", rest)]
-
   rest_vars <- setdiff(rest, c(q_vars, i_vars, sd_vars))
 
   if (length(q_vars) > 0 && with_interaction) {
 
     formula_string <- paste0(collapse = "", c(
-      ziel,
-      "~",
+      ziel, "~",
       paste0(q_vars, collapse = "*"),
-      "*(",
-      paste0(rest_vars, collapse = "+"),
-      ")"
+      "*(", paste0(rest_vars, collapse = "+"), ")"
     ))
 
     if (length(i_vars) + length(sd_vars) > 0) {
