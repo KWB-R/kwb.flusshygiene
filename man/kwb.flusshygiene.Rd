@@ -37,7 +37,7 @@ model handling, model creation and model prediction.
 \section{Model prediction}{
  \describe{ \item{\code{\link{predict_quality}}}{is
   the overhead function for the prediction. It also invokes
-  \code{\link[rstanarm]{posterior_predict}}}
+  \code{\link[rstanarm]{posterior_predict.stanreg}}}
   \item{\code{\link{get_newdata}}}{gathers the latest data for prediction.}
   \item{\code{\link{print_latest}}}{prints the prediction of the latest day.}
   \item{\code{\link{plot_predicted_quality}}}{plots a whole season with
