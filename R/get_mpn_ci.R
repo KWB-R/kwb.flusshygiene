@@ -11,9 +11,10 @@
 #' @importFrom dplyr bind_rows arrange
 #' @importFrom rlang .data
 #' @examples
+#' \dontrun{
 #' print(get_mpn_ci(c(15,30,35,60,61,71,120,1959,25000,369990)))
+#' }
 #'
-
 get_mpn_ci <- function(e.coli)
 {
   path <- paste0(get_paths()$dir.riverdata, "/MPN_tables")
