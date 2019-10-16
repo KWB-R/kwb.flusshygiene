@@ -150,12 +150,12 @@ model handling, model creation and model prediction.</p>
   creation. Asks the user whether or not the new model shall be saved as
   R-object.</p></dd> <dt><code><a href='import_riverdata.html'>import_riverdata</a></code></dt><dd><p>reads all river data from
   a directory.</p></dd> <dt><code><a href='build_model.html'>build_model</a></code></dt><dd><p>is a small function
-  handling model creation and invokes <code><a href='https://rdrr.io/pkg/rstanarm/man/stan_lm.html'>stan_lm</a></code> for
+  handling model creation and invokes <code><a href='https://mc-stan.org/rstanarm/reference/stan_lm.html'>stan_lm</a></code> for
   model building.</p></dd> <dt><code><a href='build_model.html'>ask_for_variables</a></code></dt><dd><p>asks the user which
   variables shall be included in the model. Creates plots as a side effect.</p></dd>
   <dt><code><a href='build_model.html'>process_model_riverdata</a></code></dt><dd><p>processes a data.frame with
   the necessary data for the data argument in
-  <code><a href='https://rdrr.io/pkg/rstanarm/man/stan_lm.html'>stan_lm</a></code></p></dd>
+  <code><a href='https://mc-stan.org/rstanarm/reference/stan_lm.html'>stan_lm</a></code></p></dd>
   <dt><code><a href='build_model.html'>create_formula</a></code></dt><dd><p>creates a hygiene formula out of the
   variables with the form <code>e.coli ~ Q * (R + Ka)</code></p></dd> 
 </dl>
@@ -165,7 +165,7 @@ model handling, model creation and model prediction.</p>
     <p></p><dl class='dl-horizontal'>
 <dt><code><a href='predict_quality.html'>predict_quality</a></code></dt><dd><p>is
   the overhead function for the prediction. It also invokes
-  <code><a href='https://rdrr.io/pkg/rstanarm/man/posterior_predict.stanreg.html'>posterior_predict.stanreg</a></code></p></dd>
+  <code><a href='https://mc-stan.org/rstanarm/reference/posterior_predict.stanreg.html'>posterior_predict.stanreg</a></code></p></dd>
   <dt><code><a href='predict_quality.html'>get_newdata</a></code></dt><dd><p>gathers the latest data for prediction.</p></dd>
   <dt><code><a href='predict_quality.html'>print_latest</a></code></dt><dd><p>prints the prediction of the latest day.</p></dd>
   <dt><code><a href='plot_predicted_quality.html'>plot_predicted_quality</a></code></dt><dd><p>plots a whole season with
@@ -214,7 +214,7 @@ model handling, model creation and model prediction.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
 
       </footer>
