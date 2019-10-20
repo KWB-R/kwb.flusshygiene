@@ -39,7 +39,8 @@ Imports:
     lubridate (>= 1.7.1),
     ggplot2 (>= 2.2.1),
     rstanarm (>= 2.15.3),
-    kwb.utils (>= 0.4.3)
+    kwb.utils (>= 0.4.3),
+    purrr (>= 0.3.2)
 Suggests:
     knitr (>= 1.23),
     readxl (>= 1.3.1),
