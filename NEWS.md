@@ -1,3 +1,10 @@
+# kwb.flusshygiene 0.3.0
+
+* Added last changes by Carsten Vick that were not yet under version control
+* new: get_mpn_ci()
+* assess_bathing_quality_eu(): sigma = 0.5 in case that sd(e.coli) is NA
+* build_model(): new argument "with_interaction"
+
 # kwb.flusshygiene 0.2.2
 
 * Added a `NEWS.md` file to track changes to the package.

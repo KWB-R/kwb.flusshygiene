@@ -1,6 +1,6 @@
 Package: kwb.flusshygiene
 Title: Functions used within FLUSSHYGIENE project (BMBF)
-Version: 0.2.2
+Version: 0.3.0
 Authors@R: 
     c(person(given = "Carsten",
              family = "Vick",
